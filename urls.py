@@ -1,5 +1,5 @@
 from datetime import date
-from views import Index, About
+from views import Index, About, Contact
 
 
 # front controller
@@ -16,4 +16,5 @@ fronts = [secret_front, other_front]
 routes = {
     '/': Index(),
     '/about/': About(),
+    '/contact/': Contact(),
 }
