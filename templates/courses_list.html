@@ -13,18 +13,16 @@
         {% include "inc-sidebar.html" %}
     {% endblock %}
     <div id="content">
-        <h1>Список категорий</h1>
+        <h1>Список курсов в категории {{ name }}</h1>
+        <a href="/create-course/?id={{ id }}">Создать новый курс</a>
+        <br><br>
         {% for item in objects_list %}
-        <li>
-            {{ item.name }} <span>Количество курсов: {{ item.courses_count() }}</span>
-            {% if item.courses_count() %}
-			    <a href="/courses-list/?id={{ item.id }}">Показать курсы</a>
-            {% else %}
-                <a href="/create-course/?id={{ item.id }}">Создать новый курс</a>
-            {% endif %}
-        </li>
+            <li>
+                {{ item.name }} <span><a style="margin-left: 10px" href="/copy-course/?id={{ item.id }}">скопировать</a></span>
+            </li>
         {% endfor %}
-        <a href="/create_category/">Создать категорию</a>
+        <br>
+        <a href="/">На Главную</a>
     </div>
 </div>
 {% endblock %}
