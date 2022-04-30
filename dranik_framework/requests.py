@@ -38,9 +38,7 @@ class PostRequests:
     def parse_wsgi_input_data(self, data: bytes) -> dict:
         if data:
             data_str = data.decode('utf-8')
-            print(f'Строка после декодирования: {data_str}')
             data_dict = self.parse_input_param(data_str)
-            print(f'Словарь после парсинга: {data_dict}')
             return data_dict
 
     def get_wsgi_input_params(self, data: dict) -> dict:

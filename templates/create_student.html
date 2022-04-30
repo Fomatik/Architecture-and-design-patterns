@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% set active_page = "index" %}
+{% block title %}Главная{% endblock %}
+{% block style %}
+    {% include "inc-style.html" %}
+{% endblock %}
+{% block header %}
+    {% include "inc-header.html" %}
+{% endblock %}
+{% block content %}
+    <div id="site_content">
+        {% block sidebar %}
+            {% include "inc-sidebar.html" %}
+        {% endblock %}
+        <div id="content">
+            <h1>Создание студента</h1>
+            <form method="post">
+                <div class="form_settings form_category">
+                    <input type="text" name="name" placeholder="Имя">
+                    <button type="submit">Сохранить</button>
+                </div>
+            </form>
+            <br>
+            <a href="/">На Главную</a>
+        </div>
+    </div>
+{% endblock %}
+{% block foooter %}
+    {% include "inc-footer.html" %}
+{% endblock %}
