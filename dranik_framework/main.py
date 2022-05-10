@@ -1,14 +1,22 @@
 from quopri import decodestring
 
 from dranik_framework.requests import PostRequests, GetRequests
+from patterns.creative_patterns import Logger
+
+logger = Logger('main')
 
 
 class PageNotFound404:
     def __call__(self, request):
+        logger.log(f'{self.__class__.__name__} --> '
+                   f'{Framework.path}')
         return '404 WHAT', '404 PAGE Not Found'
 
 
 class Framework:
+    # Не нашёл другого способа доступа к переменной в классе для вывода в лог,
+    # может вы подскажете?
+    path = None
 
     """Класс Framework - основа фреймворка"""
 
@@ -23,25 +31,25 @@ class Framework:
 
         """Метод __call__ вызывается при вызове объекта класса Framework"""
 
-        path = environ['PATH_INFO']
+        Framework.path = environ['PATH_INFO']
 
-        if not path.endswith('/'):
-            path = f'{path}/'
+        if not Framework.path.endswith('/'):
+            Framework.path = f'{Framework.path}/'
 
         request = {'method': environ['REQUEST_METHOD']}
 
         if request['method'] == 'POST':
             data = PostRequests().get_wsgi_input_params(environ)
             request['data'] = self.decode_value(data)
-            print(f'Нам пришли Рost-данные: {request["data"]}')
+            logger.log(f'Нам пришли Рost-данные: {request["data"]}')
 
         if request['method'] == 'GET':
             request_params = GetRequests().get_request_params(environ)
             request['request_params'] = Framework.decode_value(request_params)
-            print(f'Нам пришёл GET-запрос: {request["request_params"]}')
+            logger.log(f'Нам пришёл GET-запрос: {request["request_params"]}')
 
-        if path in self.routes_lst:
-            view = self.routes_lst[path]
+        if Framework.path in self.routes_lst:
+            view = self.routes_lst[Framework.path]
         else:
             view = PageNotFound404()
 
