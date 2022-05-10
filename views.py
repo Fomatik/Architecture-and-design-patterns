@@ -1,13 +1,16 @@
 from dranik_framework.templator import render
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
 from patterns.behavioral_patterns import ListView, CreateView, FileWriter, \
     ConsoleWriter, EmailNotifier, SmsNotifier, BaseSerializer
-from patterns.creative_patterns import Engine, Logger
+from patterns.creative_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import Route, Debug
 
 site = Engine()
 logger = Logger('main', ConsoleWriter())
 email_notifier = EmailNotifier()
 sms_notifier = SmsNotifier()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 
 @Route('/')
@@ -138,8 +141,12 @@ class CopyCourse:
 
 @Route('/student-list/')
 class StudentListView(ListView):
-    queryset = site.students
+    # queryset = site.students
     template_name = 'student_list.html'
+
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('student')
+        return mapper.all()
 
 
 @Route('/create-student/')
@@ -150,6 +157,9 @@ class StudentCreateView(CreateView):
         name = data['name']
         new_obj = site.create_user('student', name)
         site.students.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
+
 
 
 @Route('/add-student/')
@@ -159,7 +169,7 @@ class AddStudentByCourseCreateView(CreateView):
     def get_context_data(self):
         context = super().get_context_data()
         context['courses'] = site.courses
-        context['students'] = site.students
+        context['students'] = MapperRegistry.get_current_mapper('student').all()
         return context
 
     def create_obj(self, data: dict):
