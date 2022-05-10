@@ -1,11 +1,14 @@
 from dranik_framework.templator import render
 from patterns.creative_patterns import Engine, Logger
+from patterns.structural_patterns import Route, Debug
 
 site = Engine()
 logger = Logger('main')
 
 
+@Route('/')
 class Index:
+    @Debug(view='Index')
     def __call__(self, request):
         logger.log('Index page')
         return '200 OK', render('index.html', date=request.get('date', None),
@@ -13,7 +16,9 @@ class Index:
                                 objects_list=site.categories)
 
 
+@Route('/about/')
 class About:
+    @Debug(view='About')
     def __call__(self, request):
         logger.log('About page')
         return '200 OK', render('about.html',
@@ -21,15 +26,19 @@ class About:
                                 link=request.get('link', None))
 
 
+@Route('/contact/')
 class Contact:
-    logger.log('Contact page')
+    @Debug(view='Contact')
     def __call__(self, request):
+        logger.log('Contact page')
         return '200 OK', render('contact.html',
                                 date=request.get('date', None),
                                 link=request.get('link', None))
 
 
+@Route('/create_category/')
 class CreateCategory:
+    @Debug(view='CreateCategory')
     def __call__(self, request):
         logger.log('Create category page')
         if request['method'] == 'POST':
@@ -47,9 +56,11 @@ class CreateCategory:
                                     link=request.get('link', None))
 
 
+@Route('/create-course/')
 class CreateCourse:
     category_id = -1
 
+    @Debug(view='CreateCourse')
     def __call__(self, request):
         logger.log('Create course page')
         if request['method'] == 'POST':
@@ -59,8 +70,6 @@ class CreateCourse:
             name = data['name']
 
             category = site.categories[self.category_id]
-            # if self.category_id != -1:
-            #     category = site.category_by_id(int(self.category_id))
 
             course = site.create_course('online', name, category)
             site.courses.append(course)
@@ -82,7 +91,9 @@ class CreateCourse:
                 return '200 OK', 'No categories have been added yet'
 
 
+@Route('/courses-list/')
 class CoursesList:
+    @Debug(view='CoursesList')
     def __call__(self, request):
         logger.log('Courses list page')
         try:
@@ -95,7 +106,9 @@ class CoursesList:
             return '200 OK', 'No courses have been added yet'
 
 
+@Route('/copy-course/')
 class CopyCourse:
+    @Debug(view='CopyCourse')
     def __call__(self, request):
         logger.log('Copy course')
         request_params = request['request_params']
